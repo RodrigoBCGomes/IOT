@@ -31,7 +31,7 @@ void setup() {
 
 //Desativando o SSL
   client.setInsecure();
-  http.begin(client,"https://iot-rodrigo.onrender.com");
+  http.begin(client,"https://iot-rodrigo.onrender.com/");
   int httpCode = http.GET();
   if(httpCode > 0) {
     String payload = http.getString();
@@ -42,6 +42,26 @@ void setup() {
 }
 
 void loop() {
+  WiFiClientSecure client;
+  HTTPClient http;
+  client.setInsecure();
+  http.begin(client,"https://iot-rodrigo.onrender.com/led/state-led");
+  int httpCode = http.GET();
+  String payload = http.getString();
+  Serial.print(payload);
+
+  StaticJsonDocument<54> doc;
+
+  DeserializationError error = deserializeJson(doc,payload);
+  if(error) {
+    Serial.print("Deu erro em transformar em documento o nosso Json da API.");
+    Serial.println(error.f_str());
+  }
+  bool state = doc["state"];
+  Serial.println(state);
+  digitalWrite(led,state);
+  delay(10);
+  
   digitalWrite(led,HIGH);
   delay(500);
   digitalWrite(led,LOW);
