@@ -1,5 +1,5 @@
 #include ".\config.h"
-#include <ESP8266WiFI.h>
+#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
@@ -15,7 +15,7 @@ void setup() {
   Serial.print("Conectando no WIFI: ");
   Serial.println(ssid);
   WiFi.begin(ssid,password);
-  while(Wifi.status() != WL_CONNECTED) {
+  while(WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
   }
