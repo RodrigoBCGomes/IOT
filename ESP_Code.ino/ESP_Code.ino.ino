@@ -24,6 +24,21 @@ void setup() {
   Serial.println("Wifi connected!");
   
   pinMode(led,OUTPUT);
+
+//Criar um cliente para o site
+  WiFiClientSecure client;
+  HTTPClient http;
+
+//Desativando o SSL
+  client.setInsecure();
+  http.begin(client,"https://iot-rodrigo.onrender.com");
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+    String payload = http.getString();
+    Serial.println(payload);
+  }else{
+    Serial.print("Erro ao tentar pegar os dados da API.");
+  }
 }
 
 void loop() {
