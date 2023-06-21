@@ -1,3 +1,4 @@
 /ESP_Code.ino/config.h
 /Server/node_modules
 /Server/packcage-lock.json
+/Server/.env
