@@ -7,3 +7,5 @@ const sensorSchema = new mongoose.Schema({
 })
 
 const Sensor = mongoose.model("Sensor",sensorSchema)
+
+module.exports = Sensor;
