@@ -9,12 +9,12 @@
 
 //Variáveis LED
 bool stateLedApi;
-unsigned long lastTime = 0;
+unsigned long lastTimeLed = 0;
 unsigned long timerDelayLed = 10;
 
 //Variáveis sensor ultrassônico
-unsigned long lastTimeLed = 0;
-unsigned long timerDelayLed = 50;
+unsigned long lastTimeSensor = 0;
+unsigned long timerDelaySensor = 50;
 const int trigPin = D6;
 const int echoPin = D5;
 
@@ -23,7 +23,7 @@ const int echoPin = D5;
 
 long duration;
 float distanceCm;
-float distanceInch
+float distanceInch;
 
 //Executado no começo do código
 void setup() {
@@ -89,9 +89,34 @@ void loop() {
   }
 
 //Estado do LED  
-      bool state = doc["state"];
-      Serial.println(state);
-      digitalWrite(led,state);    
-      lastTimeLed = millis;
+    bool state = doc["state"];
+    Serial.println(state);
+    digitalWrite(led,state);    
+    lastTimeLed = millis();
+  }
+//Lê o sinal
+  digitalWrite(trigPin,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin,LOW);
+
+  duration = pulseIn(echoPin,HIGH);
+  distanceCm = duration * SOUND_VELOCITY/2;
+
+  if((millis()-lastTimeSensor > timerDelaySensor)){
+    http.begin(client,"https://iot-rodrigo.onrender.com/sensor/acesso");
+    http.addHeader("Content-Type","application/json");
+    StaticJsonDocument<100> SensorDocument;
+    SensorDocument["nome"] = "Porta de entrada";
+    SensorDocument["value"] = distanceCm;
+    if(distanceCm < 150 and distanceCm > 50){
+      char bufferDoJsonEmString[100];
+      serializeJson(SensorDocument,bufferDoJsonEmString);
+      int httpResponseCode = http.POST(bufferDoJsonEmString);
+      String ResponceServer = http.getString();
+      Serial.println(ResponceServer); 
+    }
+    lastTimeSensor = millis();
   }
 }
