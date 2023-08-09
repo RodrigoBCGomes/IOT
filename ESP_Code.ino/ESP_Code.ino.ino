@@ -4,7 +4,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-//Definilões
+//Definições
 #define led D8
 
 //Variáveis LED
@@ -25,6 +25,7 @@ long duration;
 float distanceCm;
 float distanceInch
 
+//Executado no começo do código
 void setup() {
 //Conctando no WIFI
   Serial.begin(115200);
@@ -40,7 +41,8 @@ void setup() {
 
   Serial.println("");
   Serial.println("Wifi connected!");
-  
+
+//Desligando o LED  
   pinMode(led,OUTPUT);
 
 //Criar um cliente para o site
@@ -57,31 +59,39 @@ void setup() {
   }else{
     Serial.print("Erro ao tentar pegar os dados da API.");
   }
+
+  pinMode(trigPin,OUTPUT);
+  pinMode(echoPin,INPUT);
 }
 
+//Repete durante o código
 void loop() {
+//Conectando com o WIFI
   WiFiClientSecure client;
   HTTPClient http;
   client.setInsecure();
-  http.begin(client,"https://iot-rodrigo.onrender.com/led/state-led");
-  int httpCode = http.GET();
-  String payload = http.getString();
-  Serial.print(payload);
 
-  StaticJsonDocument<54> doc;
-
-  DeserializationError error = deserializeJson(doc,payload);
-  if(error) {
-    Serial.print("Deu erro em transformar em documento o nosso Json da API.");
-    Serial.println(error.f_str());
-  }
-  bool state = doc["state"];
-  Serial.println(state);
-  digitalWrite(led,state);
-  delay(10);
+//Se o tempo atual (millis) menos a última marcação (lastTime) for menor que o tempo escohido, faz a tarefa e reinicia a marcação o tempo atual
+  if((millis()-lastTimeLed > timerDelayLed)){
   
-  digitalWrite(led,HIGH);
-  delay(500);
-  digitalWrite(led,LOW);
-  delay(500);
+    http.begin(client,"https://iot-rodrigo.onrender.com/led/state-led");
+    int httpCode = http.GET();
+    String payload = http.getString();
+    Serial.print(payload);
+
+    StaticJsonDocument<54> doc;
+
+//Erro no WIFI
+    DeserializationError error = deserializeJson(doc,payload);
+    if(error) {
+      Serial.print("Deu erro em transformar em documento o nosso Json da API.");
+      Serial.println(error.f_str());
+  }
+
+//Estado do LED  
+      bool state = doc["state"];
+      Serial.println(state);
+      digitalWrite(led,state);    
+      lastTimeLed = millis;
+  }
 }
