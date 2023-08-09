@@ -1,11 +1,29 @@
+//Bibliotecas
 #include ".\config.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
+//Definilões
 #define led D8
 
+//Variáveis LED
 bool stateLedApi;
+unsigned long lastTime = 0;
+unsigned long timerDelayLed = 10;
+
+//Variáveis sensor ultrassônico
+unsigned long lastTimeLed = 0;
+unsigned long timerDelayLed = 50;
+const int trigPin = D6;
+const int echoPin = D5;
+
+//Velocidade do COM em cm/uS
+#define SOUND_VELOCITY 0.034
+
+long duration;
+float distanceCm;
+float distanceInch
 
 void setup() {
 //Conctando no WIFI
